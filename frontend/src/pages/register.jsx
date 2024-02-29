@@ -1,14 +1,14 @@
 import { useState } from "react";
 export default function register() {
   const [error, setError] = useState("Hello!");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPass] = useState("");
+  const [cpassword, setCpass] = useState("");
+
   function registerVerify() {
     const sc = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~][0-9]/g;
     const error = document.getElementById("err");
-    let name = document.getElementById("registerName").value;
-    let email = document.getElementById("registerMail").value;
-    let password = document.getElementById("registerPassword").value;
-    let cpassword = document.getElementById("registerCPassword").value;
-
     if (sc.test(name) === true || name === "" || name.length < 3) {
       setError("Name is invalid");
       error.classList.remove("hidden");
@@ -23,7 +23,24 @@ export default function register() {
       error.classList.remove("hidden");
     } else {
       error.classList.add("hidden");
+      return 200;
     }
+  }
+  function registerAccount() {
+    console.log(name, email, password, cpassword);
+    fetch("http://localhost:8080/user/register", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        pass: password,
+        cpass: cpassword,
+      }),
+    });
   }
   return (
     <div className="flex flex-row">
@@ -61,24 +78,36 @@ export default function register() {
               placeholder="Name"
               className="input input-bordered rounded bg-neutral-100 w-5/6 text-black placeholder:text-neutral-400"
               id="registerName"
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
             />
             <input
               type="text"
               placeholder="Email"
               className="input input-bordered rounded bg-neutral-100 w-5/6 text-black placeholder:text-neutral-400"
               id="registerMail"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
             />
             <input
               type="password"
               placeholder="Password"
               className="input input-bordered rounded bg-neutral-100 w-5/6 text-black placeholder:text-neutral-400"
               id="registerPassword"
+              onChange={(e) => {
+                setPass(e.target.value);
+              }}
             />
             <input
               type="password"
               placeholder="Confirm Password"
               className="input input-bordered rounded bg-neutral-100 w-5/6 text-black placeholder:text-neutral-400"
               id="registerCPassword"
+              onChange={(e) => {
+                setCpass(e.target.value);
+              }}
             />
             <div
               role="alert"
@@ -103,7 +132,13 @@ export default function register() {
             <button
               className="btn w-5/6 bg-primary text-neutral-50 rounded-3xl border-none text-lg font-light hover:bg-primary hover:text-black transition-all duration-200"
               onClick={() => {
-                registerVerify();
+                let ok = registerVerify();
+                if (ok === 200) {
+                  console.log("working");
+                  registerAccount();
+                } else {
+                  console.log("nope");
+                }
               }}
             >
               Sign Up
